@@ -3,7 +3,7 @@ import "dotenv/config";
 import "./firebase/initialise";
 
 import type { ITransactionSignal } from "./types/signal";
-import getDailyCandle from "./api/getDailyCandle";
+import getReturnFromSignal from "./api/getReturnFromSignal";
 
 const csvPath = "./MACD_Breakout.csv";
 
@@ -33,9 +33,17 @@ const extractSignals = (convertedCsvContent: string) => {
   const csvContent = readFileSync(csvPath);
   const convertedCsvContent = Buffer.from(csvContent).toString();
 
-  const signals = extractSignals(convertedCsvContent);
+  const signals = extractSignals(convertedCsvContent).slice(0, 5);
 
-  const signal = signals[0];
+  for (let i = 0; i < signals.length; i++) {
+    const signal = signals[2];
 
-  const candle = getDailyCandle(signal.date, signal.symbol);
+    const returnFromSignal = await getReturnFromSignal(
+      signal.date,
+      signal.symbol
+    );
+
+    console.log(`Traded ${signal.symbol} for a return of ${returnFromSignal}%`);
+    break;
+  }
 })();
