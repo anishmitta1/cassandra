@@ -1,9 +1,10 @@
 import { readFileSync } from "fs";
+import getReturnFromSignal from "./controllers/getReturnFromSignal";
+import { Strategies } from "./types/strategy";
+
 import "dotenv/config";
-import "./firebase/initialise";
 
 import type { ITransactionSignal } from "./types/signal";
-import getReturnFromSignal from "./api/getReturnFromSignal";
 
 const csvPath = "./MACD_Breakout.csv";
 
@@ -33,17 +34,21 @@ const extractSignals = (convertedCsvContent: string) => {
   const csvContent = readFileSync(csvPath);
   const convertedCsvContent = Buffer.from(csvContent).toString();
 
-  const signals = extractSignals(convertedCsvContent).slice(0, 5);
+  const signals = extractSignals(convertedCsvContent).slice(50, 59);
 
   for (let i = 0; i < signals.length; i++) {
-    const signal = signals[2];
+    const signal = signals[i];
 
     const returnFromSignal = await getReturnFromSignal(
       signal.date,
-      signal.symbol
+      signal.symbol,
+      Strategies.Topaz
     );
 
-    console.log(`Traded ${signal.symbol} for a return of ${returnFromSignal}%`);
-    break;
+    if (returnFromSignal) {
+      console.log(
+        `Traded ${signal.symbol} for a return of ${returnFromSignal}%`
+      );
+    }
   }
 })();

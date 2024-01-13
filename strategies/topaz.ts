@@ -1,5 +1,7 @@
 import axios from "axios";
+import { getReturns } from "./utils";
 
+import type { IStrategy } from "../types/strategy";
 import type { ITransactionSignal } from "../types/signal";
 
 const getFormattedSignalDate = (signalDate: ITransactionSignal["date"]) => {
@@ -15,21 +17,19 @@ const getFormattedSignalDate = (signalDate: ITransactionSignal["date"]) => {
     .join("-");
 };
 
-const getReturns = (open: number, close: number) => {
-  return (close / open - 1) * 100;
-};
-
-const getReturnFromSignal = async (
-  signalDate: ITransactionSignal["date"],
-  signalSymbol: ITransactionSignal["symbol"]
-) => {
+const topaz: IStrategy = async (signalDate, signalSymbol) => {
   const symbolWithExchange = `${signalSymbol}.BSE`;
   const endpoint = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbolWithExchange}&outputsize=full&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
 
   const { data } = await axios.get(endpoint);
 
   const historicalData = data[Object.keys(data)[1]];
-  console.log({ historicalData, data });
+
+  if (!historicalData) {
+    console.log(`Something went wrong with ${signalSymbol}`, historicalData);
+    return null;
+  }
+
   const candleEntries = Object.entries(historicalData).reverse();
 
   const formattedSignalDate = getFormattedSignalDate(signalDate);
@@ -71,4 +71,4 @@ const getReturnFromSignal = async (
   return returns;
 };
 
-export default getReturnFromSignal;
+export default topaz;
