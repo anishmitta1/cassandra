@@ -1,0 +1,1 @@
+This module contains historical data and is meant to be regenerated whenever needed. Uses the https://github.com/jugaad-py/jugaad-data cli.
