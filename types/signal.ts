@@ -11,12 +11,15 @@ interface ITransactionSignal {
   sector: string;
 }
 
-interface IBacktestCandle {
+interface ICandle {
   o: number;
   h: number;
   l: number;
   c: number;
+}
+
+interface IBacktestCandle extends ICandle {
   v: number;
 }
 
-export type { ITransactionSignal, IBacktestCandle };
+export type { ITransactionSignal, IBacktestCandle, ICandle };

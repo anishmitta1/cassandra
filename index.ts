@@ -3,6 +3,7 @@ import getReturnFromSignal from "./controllers/getReturnFromSignal";
 import { Strategies } from "./types/strategy";
 
 import "dotenv/config";
+import "./firebase/initialise";
 
 import type { ITransactionSignal } from "./types/signal";
 
@@ -34,7 +35,7 @@ const extractSignals = (convertedCsvContent: string) => {
   const csvContent = readFileSync(csvPath);
   const convertedCsvContent = Buffer.from(csvContent).toString();
 
-  const signals = extractSignals(convertedCsvContent).slice(50, 59);
+  const signals = extractSignals(convertedCsvContent).slice(70, 79);
 
   for (let i = 0; i < signals.length; i++) {
     const signal = signals[i];
