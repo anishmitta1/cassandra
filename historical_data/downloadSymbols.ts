@@ -15,6 +15,6 @@ const csvPath = "./historical_data/nifty500list.csv";
   csvRows.slice(0, 5).forEach((row) => {
     const [name, sector, symbol] = row.split(",");
 
-    shell.exec(`sh ./historical_data/downloadSymbol.sh ${symbol}`);
+    shell.exec(`npm run download ${symbol}`);
   });
 })();

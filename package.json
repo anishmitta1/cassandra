@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ts-node index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "buy": "ts-node scripts/buyScript.ts"
+    "buy": "ts-node scripts/buyScript.ts",
+    "download": "sh ./historical_data/downloadSymbol.sh"
   },
   "repository": {
     "type": "git",
