@@ -12,7 +12,7 @@ const csvPath = "./historical_data/nifty500list.csv";
     .slice(1)
     .map((row) => row.slice(0, -1));
 
-  csvRows.slice(0, 5).forEach((row) => {
+  csvRows.forEach((row) => {
     const [name, sector, symbol] = row.split(",");
 
     shell.exec(`npm run download ${symbol}`);

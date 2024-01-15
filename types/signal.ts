@@ -4,6 +4,11 @@ type Year = number;
 
 type IBacktestDate = [Day, Month, Year];
 
+/**
+ * DD_MM_YYYY
+ */
+type IPrettyBacktestDate = `${string}_${string}_${string}`;
+
 interface ITransactionSignal {
   date: IBacktestDate;
   symbol: string;
@@ -22,4 +27,10 @@ interface IBacktestCandle extends ICandle {
   v: number;
 }
 
-export type { ITransactionSignal, IBacktestCandle, ICandle };
+export type {
+  ITransactionSignal,
+  IBacktestCandle,
+  ICandle,
+  IBacktestDate,
+  IPrettyBacktestDate,
+};

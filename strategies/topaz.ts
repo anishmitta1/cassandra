@@ -1,8 +1,12 @@
-import axios from "axios";
-import { getReturns } from "./utils";
+import getHistoricalData from "../historical_data/getHistoricalData";
 
 import type { IStrategy } from "../types/strategy";
-import type { ITransactionSignal } from "../types/signal";
+import type {
+  IBacktestCandle,
+  IBacktestDate,
+  ICandle,
+  ITransactionSignal,
+} from "../types/signal";
 
 const getFormattedSignalDate = (signalDate: ITransactionSignal["date"]) => {
   return signalDate
@@ -17,58 +21,77 @@ const getFormattedSignalDate = (signalDate: ITransactionSignal["date"]) => {
     .join("-");
 };
 
+const addMonthsToDate = (
+  date: IBacktestDate,
+  monthsToAdd: number
+): IBacktestDate => {
+  const [day, month, year] = date;
+
+  const newMonth = ((month + monthsToAdd - 1) % 12) + 1;
+
+  const newYear = newMonth === 1 ? year + 1 : year;
+
+  return [day, newMonth, newYear];
+};
+
 const topaz: IStrategy = async (signalDate, signalSymbol) => {
-  const symbolWithExchange = `${signalSymbol}.BSE`;
-  const endpoint = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbolWithExchange}&outputsize=full&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
+  // const toDate: IBacktestDate = [30, 4, 2023];
 
-  const { data } = await axios.get(endpoint);
+  const historicalData = getHistoricalData(signalSymbol, signalDate, 50);
 
-  const historicalData = data[Object.keys(data)[1]];
+  console.log({ historicalData });
 
-  if (!historicalData) {
-    console.log(`Something went wrong with ${signalSymbol}`, historicalData);
-    return null;
-  }
+  // const symbolWithExchange = `${signalSymbol}.BSE`;
+  // const endpoint = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbolWithExchange}&outputsize=full&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
 
-  const candleEntries = Object.entries(historicalData).reverse();
+  // const { data } = await axios.get(endpoint);
 
-  const formattedSignalDate = getFormattedSignalDate(signalDate);
+  // const historicalData = data[Object.keys(data)[1]];
 
-  let buyPrice = 0;
-  let sellPrice = 0;
-  let ttl = 30;
-  let isPositionAcitve = false;
+  // if (!historicalData) {
+  //   console.log(`Something went wrong with ${signalSymbol}`, historicalData);
+  //   return null;
+  // }
 
-  for (let i = 0; i < candleEntries.length; i++) {
-    const [date, candle]: any = candleEntries[i];
-    if (date === formattedSignalDate) {
-      buyPrice = Number(candle["1. open"]);
-      isPositionAcitve = true;
-    }
+  // const candleEntries = Object.entries(historicalData).reverse();
 
-    if (isPositionAcitve) {
-      const candleOpen = Number(candle["1. open"]);
-      const candleClose = Number(candle["4. close"]);
+  // const formattedSignalDate = getFormattedSignalDate(signalDate);
 
-      if (ttl <= 0) {
-        sellPrice = candleOpen;
-        isPositionAcitve = false;
-        break;
-      }
+  // let buyPrice = 0;
+  // let sellPrice = 0;
+  // let ttl = 30;
+  // let isPositionAcitve = false;
 
-      const change = getReturns(candleOpen, candleClose);
+  // for (let i = 0; i < candleEntries.length; i++) {
+  //   const [date, candle]: any = candleEntries[i];
+  //   if (date === formattedSignalDate) {
+  //     buyPrice = Number(candle["1. open"]);
+  //     isPositionAcitve = true;
+  //   }
 
-      if (change < -2) {
-        ttl = ttl - Math.abs(Math.round(change) * 2) - 1;
-      } else {
-        ttl = ttl - 1;
-      }
-    }
-  }
+  //   if (isPositionAcitve) {
+  //     const candleOpen = Number(candle["1. open"]);
+  //     const candleClose = Number(candle["4. close"]);
 
-  const returns = getReturns(buyPrice, sellPrice);
+  //     if (ttl <= 0) {
+  //       sellPrice = candleOpen;
+  //       isPositionAcitve = false;
+  //       break;
+  //     }
 
-  return returns;
+  //     const change = getReturns(candleOpen, candleClose);
+
+  //     if (change < -2) {
+  //       ttl = ttl - Math.abs(Math.round(change) * 2) - 1;
+  //     } else {
+  //       ttl = ttl - 1;
+  //     }
+  //   }
+  // }
+
+  // const returns = getReturns(buyPrice, sellPrice);
+
+  return 0;
 };
 
 export default topaz;
