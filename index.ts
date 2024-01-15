@@ -35,7 +35,7 @@ const extractSignals = (convertedCsvContent: string) => {
   const csvContent = readFileSync(csvPath);
   const convertedCsvContent = Buffer.from(csvContent).toString();
 
-  const signals = extractSignals(convertedCsvContent).slice(0, 1);
+  const signals = extractSignals(convertedCsvContent).slice(0, 20);
 
   for (let i = 0; i < signals.length; i++) {
     const signal = signals[i];
