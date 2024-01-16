@@ -14,6 +14,10 @@ interface IBuySymbolConfig {
    * Immediate or Cancel, set to false if you intend to place an amo
    */
   amo: boolean;
+  /**
+   * Stoploss value in percentage
+   */
+  stoploss: number;
 }
 
 interface IBuySymbolConfirmation {

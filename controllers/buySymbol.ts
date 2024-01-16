@@ -7,7 +7,7 @@ const buySymbol = async (
   config: IBuySymbolConfig
 ): Promise<IBuySymbolConfirmation> => {
   try {
-    const { amount, amo, symbol } = config;
+    const { amount, amo, symbol, stoploss } = config;
     const isMarketOpen = checkIsMarketOpen();
 
     if (!isMarketOpen && !amo) {
@@ -29,7 +29,12 @@ const buySymbol = async (
 
     const placeOrder = amo ? kiteApi.placeAmoBuy : kiteApi.placeMarketBuy;
 
-    const { orderId } = await placeOrder(symbol, qty);
+    const stoplossPrice = (1 - stoploss / 100) * lastPrice;
+
+    const [{ orderId }, { triggerId }] = await Promise.all([
+      placeOrder(symbol, qty),
+      kiteApi.createBasicGtt(symbol, qty, stoplossPrice, lastPrice),
+    ]);
 
     return { success: true, orderId };
   } catch (e) {
