@@ -1,13 +1,6 @@
 import getHistoricalData from "../historical_data/getHistoricalData";
 
 import type { IStrategy } from "../types/strategy";
-import { getReturns } from "./utils";
-
-const getChange = (close: number, open: number) => {
-  const change = close / open - 1;
-
-  return change * 100;
-};
 
 const STOPLOSS = 10;
 const TTL = 30;
@@ -31,7 +24,7 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
 
   for (let i = 0; i < entries.length; i++) {
     const [date, candle] = entries[i];
-    const { o, c } = candle;
+    const { c } = candle;
 
     if (c <= stoplossPrice) {
       daysInPosition = i + 1;
@@ -49,12 +42,6 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
 
     ttlCounter = ttlCounter - 1;
   }
-
-  const change = getChange(sellPrice, buyPrice);
-
-  console.log(
-    `Got return of ${change} from ${signalSymbol} in ${daysInPosition} days from ${signalDate}`
-  );
 
   return {
     entryDate: signalDate,

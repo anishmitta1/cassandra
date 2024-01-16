@@ -1,12 +1,13 @@
 import { readFileSync } from "fs";
 import getResultFromSignal from "./controllers/getResultFromSignal";
 import { Strategies } from "./types/strategy";
+import { getReturns } from "./strategies/utils";
+import { IBacktestTradeResult } from "./types/trade";
 
 import "dotenv/config";
 import "./firebase/initialise";
 
 import type { ITransactionSignal } from "./types/signal";
-import { getReturns } from "./strategies/utils";
 
 const csvPath = "./MACD_Breakout.csv";
 
@@ -32,17 +33,42 @@ const extractSignals = (convertedCsvContent: string) => {
   return jsonTransactionRows;
 };
 
-const calculateAverage = (returns: number[]) => {
-  if (returns.length === 0) {
-    return 0; // To handle the case of an empty array
-  }
+const calculateProfitsFromResults = (
+  results: IBacktestTradeResult[]
+): number => {
+  const wins: IBacktestTradeResult[] = [];
+  const losses: IBacktestTradeResult[] = [];
 
-  const sum = returns.reduce((acc, num) => acc + num, 0);
-  const average = sum / returns.length;
-  return average;
+  results.forEach((result) => {
+    if (result.exitPrice > result.entryPrice) {
+      wins.push(result);
+    } else {
+      losses.push(result);
+    }
+  });
+
+  const averageWin =
+    wins.reduce(
+      (acc, win) => acc + getReturns(win.entryPrice, win.exitPrice),
+      0
+    ) / wins.length;
+
+  const averageLoss =
+    losses.reduce(
+      (acc, loss) => acc + getReturns(loss.entryPrice, loss.exitPrice),
+      0
+    ) / losses.length;
+
+  console.log({
+    wins: wins.length,
+    losses: losses.length,
+    averageWin,
+    averageLoss,
+  });
+  return 0;
 };
 
-const returns: number[] = [];
+const results: IBacktestTradeResult[] = [];
 
 (async () => {
   const csvContent = readFileSync(csvPath);
@@ -61,18 +87,12 @@ const returns: number[] = [];
       );
 
       if (resultFromSignal?.exitDate) {
-        returns.push(
-          getReturns(resultFromSignal.entryPrice, resultFromSignal.exitPrice)
-        );
+        results.push(resultFromSignal);
       }
     } catch (e) {
-      console.log(`Something went wrong backtesting for ${signal.symbol}`);
+      //
     }
   }
 
-  console.log(
-    `Average return of ${calculateAverage(returns)} from ${
-      returns.length
-    } trades`
-  );
+  calculateProfitsFromResults(results);
 })();
