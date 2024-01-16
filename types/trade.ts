@@ -1,3 +1,5 @@
+import { IBacktestDate } from "./signal";
+
 interface IBuySymbolConfig {
   /**
    * Symbol to be traded.
@@ -19,4 +21,11 @@ interface IBuySymbolConfirmation {
   orderId?: string;
 }
 
-export type { IBuySymbolConfig, IBuySymbolConfirmation };
+interface IBacktestTradeResult {
+  entryDate: IBacktestDate;
+  exitDate: IBacktestDate;
+  entryPrice: number;
+  exitPrice: number;
+}
+
+export type { IBuySymbolConfig, IBuySymbolConfirmation, IBacktestTradeResult };

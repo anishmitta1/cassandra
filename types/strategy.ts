@@ -9,6 +9,6 @@ enum Strategies {
 type IStrategy = (
   signalDate: ITransactionSignal["date"],
   signalSymbol: ITransactionSignal["symbol"]
-) => Promise<number | null>;
+) => number | null;
 
 export { Strategies, IStrategy };

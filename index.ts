@@ -31,25 +31,45 @@ const extractSignals = (convertedCsvContent: string) => {
   return jsonTransactionRows;
 };
 
+const calculateAverage = (returns: number[]) => {
+  if (returns.length === 0) {
+    return 0; // To handle the case of an empty array
+  }
+
+  const sum = returns.reduce((acc, num) => acc + num, 0);
+  const average = sum / returns.length;
+  return average;
+};
+
+const returns: number[] = [];
+
 (async () => {
   const csvContent = readFileSync(csvPath);
   const convertedCsvContent = Buffer.from(csvContent).toString();
 
-  const signals = extractSignals(convertedCsvContent).slice(0, 20);
+  const signals = extractSignals(convertedCsvContent);
 
   for (let i = 0; i < signals.length; i++) {
     const signal = signals[i];
 
-    const returnFromSignal = await getReturnFromSignal(
-      signal.date,
-      signal.symbol,
-      Strategies.Topaz
-    );
-
-    if (returnFromSignal) {
-      console.log(
-        `Traded ${signal.symbol} for a return of ${returnFromSignal}%`
+    try {
+      const returnFromSignal = await getReturnFromSignal(
+        signal.date,
+        signal.symbol,
+        Strategies.Topaz
       );
+
+      if (returnFromSignal) {
+        returns.push(returnFromSignal);
+      }
+    } catch (e) {
+      console.log(`Something went wrong backtesting for ${signal.symbol}`);
     }
   }
+
+  console.log(
+    `Average return of ${calculateAverage(returns)} from ${
+      returns.length
+    } trades`
+  );
 })();

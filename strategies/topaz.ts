@@ -8,10 +8,10 @@ const getChange = (close: number, open: number) => {
   return change * 100;
 };
 
-const STOPLOSS = 6;
+const STOPLOSS = 10;
 const TTL = 30;
 
-const topaz: IStrategy = async (signalDate, signalSymbol) => {
+const topaz: IStrategy = (signalDate, signalSymbol) => {
   const historicalData = getHistoricalData(signalSymbol, signalDate, 60);
 
   if (!historicalData) {
@@ -25,17 +25,20 @@ const topaz: IStrategy = async (signalDate, signalSymbol) => {
   const stoplossPrice = ((100 - STOPLOSS) / 100) * buyPrice;
 
   let ttlCounter = TTL;
+  let daysInPosition;
 
   for (let i = 0; i < entries.length; i++) {
     const [date, candle] = entries[i];
     const { o, c } = candle;
 
     if (c <= stoplossPrice) {
-      sellPrice = c;
+      daysInPosition = i + 1;
+      sellPrice = stoplossPrice;
       break;
     }
 
     if (ttlCounter <= 0) {
+      daysInPosition = i + 1;
       sellPrice = c;
       break;
     }
@@ -48,8 +51,13 @@ const topaz: IStrategy = async (signalDate, signalSymbol) => {
       ttlCounter = ttlCounter - 1;
     }
   }
+  const change = getChange(sellPrice, buyPrice);
 
-  return getChange(sellPrice, buyPrice);
+  console.log(
+    `Got return of ${change} from ${signalSymbol} in ${daysInPosition} days from ${signalDate}`
+  );
+
+  return change;
 };
 
 export default topaz;
