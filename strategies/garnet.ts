@@ -1,18 +1,11 @@
 import getHistoricalData from "../historical_data/getHistoricalData";
 
 import type { IStrategy } from "../types/strategy";
-import { getReturns } from "./utils";
 
-const getChange = (close: number, open: number) => {
-  const change = close / open - 1;
+const STOPLOSS = 8;
+const TTL = 14;
 
-  return change * 100;
-};
-
-const STOPLOSS = 10;
-const TTL = 30;
-
-const topaz: IStrategy = (signalDate, signalSymbol) => {
+const garnet: IStrategy = (signalDate, signalSymbol) => {
   const historicalData = getHistoricalData(signalSymbol, signalDate, 60);
 
   if (!historicalData) {
@@ -44,16 +37,16 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
       break;
     }
 
-    ttlCounter = ttlCounter - 1;
+    const dailyChange = c / o - 1;
+
+    if (dailyChange < -2) {
+      ttlCounter = ttlCounter - Math.abs(Math.round(dailyChange) * 2) - 1;
+    } else {
+      ttlCounter = ttlCounter - 1;
+    }
   }
 
-  const change = getChange(sellPrice, buyPrice);
-
-  console.log(
-    `Got return of ${change} from ${signalSymbol} in ${daysInPosition} days from ${signalDate}`
-  );
-
-  return change;
+  return 0;
 };
 
-export default topaz;
+export default garnet;
