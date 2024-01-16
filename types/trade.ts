@@ -26,6 +26,7 @@ interface IBacktestTradeResult {
   exitDate: IBacktestDate;
   entryPrice: number;
   exitPrice: number;
+  symbol: string;
 }
 
 export type { IBuySymbolConfig, IBuySymbolConfirmation, IBacktestTradeResult };

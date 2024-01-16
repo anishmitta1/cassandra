@@ -27,6 +27,7 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
 
   let ttlCounter = TTL;
   let daysInPosition;
+  let sellDate;
 
   for (let i = 0; i < entries.length; i++) {
     const [date, candle] = entries[i];
@@ -35,12 +36,14 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
     if (c <= stoplossPrice) {
       daysInPosition = i + 1;
       sellPrice = stoplossPrice;
+      sellDate = date.split("-").map((item) => Number(item));
       break;
     }
 
     if (ttlCounter <= 0) {
       daysInPosition = i + 1;
       sellPrice = c;
+      sellDate = date.split("-").map((item) => Number(item));
       break;
     }
 
@@ -53,7 +56,13 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
     `Got return of ${change} from ${signalSymbol} in ${daysInPosition} days from ${signalDate}`
   );
 
-  return change;
+  return {
+    entryDate: signalDate,
+    entryPrice: buyPrice,
+    exitDate: sellDate as [number, number, number],
+    exitPrice: sellPrice,
+    symbol: signalSymbol,
+  };
 };
 
 export default topaz;

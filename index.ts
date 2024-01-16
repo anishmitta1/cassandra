@@ -1,11 +1,12 @@
 import { readFileSync } from "fs";
-import getReturnFromSignal from "./controllers/getReturnFromSignal";
+import getResultFromSignal from "./controllers/getResultFromSignal";
 import { Strategies } from "./types/strategy";
 
 import "dotenv/config";
 import "./firebase/initialise";
 
 import type { ITransactionSignal } from "./types/signal";
+import { getReturns } from "./strategies/utils";
 
 const csvPath = "./MACD_Breakout.csv";
 
@@ -53,14 +54,16 @@ const returns: number[] = [];
     const signal = signals[i];
 
     try {
-      const returnFromSignal = await getReturnFromSignal(
+      const resultFromSignal = getResultFromSignal(
         signal.date,
         signal.symbol,
         Strategies.Topaz
       );
 
-      if (returnFromSignal) {
-        returns.push(returnFromSignal);
+      if (resultFromSignal?.exitDate) {
+        returns.push(
+          getReturns(resultFromSignal.entryPrice, resultFromSignal.exitPrice)
+        );
       }
     } catch (e) {
       console.log(`Something went wrong backtesting for ${signal.symbol}`);

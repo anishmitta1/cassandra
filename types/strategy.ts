@@ -1,4 +1,5 @@
 import type { ITransactionSignal } from "./signal";
+import type { IBacktestTradeResult } from "./trade";
 
 enum Strategies {
   Topaz = "topaz",
@@ -9,6 +10,6 @@ enum Strategies {
 type IStrategy = (
   signalDate: ITransactionSignal["date"],
   signalSymbol: ITransactionSignal["symbol"]
-) => number | null;
+) => IBacktestTradeResult | null;
 
 export { Strategies, IStrategy };
