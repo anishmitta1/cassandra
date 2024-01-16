@@ -2,12 +2,43 @@ import axios from "axios";
 import { getKiteHeaders } from "../utils";
 import {
   amoOrderUrl,
+  gttUrl,
   marginsUrl,
   quoteUrl,
   regularOrderUrl,
 } from "./endpoints";
+import { stringify } from "qs";
 
 import type { IKiteGetLtpPayload, IKiteGetLtpResponse } from "./kite.types";
+
+const createBasicGtt = async (
+  tradingSymbol: string,
+  quantity: number,
+  triggerValue: number,
+  lastPrice: number
+) => {
+  const headers = await getKiteHeaders();
+
+  const payload = stringify({
+    type: "single",
+    condition: `{"exchange":"NSE", "tradingsymbol":"${tradingSymbol}", "trigger_values":[${triggerValue}], "last_price": ${lastPrice}}`,
+    orders: `[{"exchange":"NSE", "tradingsymbol": "${tradingSymbol}", "transaction_type": "SELL", "quantity": ${quantity}, "order_type": "LIMIT","product": "CNC", "price": ${triggerValue}}]`,
+  });
+
+  const {
+    data: { data },
+  } = await axios.post(gttUrl, payload, {
+    headers: {
+      ...headers,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    maxBodyLength: Infinity,
+  });
+
+  return {
+    triggerId: data.trigger_id,
+  };
+};
 
 const placeAmoBuy = async (tradingsymbol: string, quantity: number) => {
   const headers = await getKiteHeaders();
@@ -94,4 +125,10 @@ const getFundsAvailable = async (): Promise<number> => {
   return data.equity.net;
 };
 
-export { placeMarketBuy, placeAmoBuy, getLtp, getFundsAvailable };
+export {
+  placeMarketBuy,
+  placeAmoBuy,
+  getLtp,
+  getFundsAvailable,
+  createBasicGtt,
+};

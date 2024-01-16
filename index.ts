@@ -64,6 +64,9 @@ const calculateProfitsFromResults = (
     losses: losses.length,
     averageWin,
     averageLoss,
+    average:
+      (averageWin * wins.length + averageLoss * losses.length) /
+      (wins.length + losses.length),
   });
   return 0;
 };
