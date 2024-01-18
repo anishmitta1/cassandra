@@ -1,4 +1,5 @@
 import getHistoricalData from "../historical_data/getHistoricalData";
+import { getReturns } from "./utils";
 
 import type { IStrategy } from "../types/strategy";
 
@@ -42,6 +43,10 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
 
     ttlCounter = ttlCounter - 1;
   }
+
+  const change = getReturns(buyPrice, sellPrice);
+
+  console.log(`Traded ${signalSymbol} for ${change} in ${daysInPosition} days`);
 
   return {
     entryDate: signalDate,

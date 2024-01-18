@@ -9,7 +9,7 @@ import "./firebase/initialise";
 
 import type { ITransactionSignal } from "./types/signal";
 
-const csvPath = "./MACD_Breakout.csv";
+const csvPath = "./Backtest MACD Breakout, Technical Analysis Scanner.csv";
 
 const extractSignals = (convertedCsvContent: string) => {
   const csvRows = convertedCsvContent
@@ -86,7 +86,7 @@ const results: IBacktestTradeResult[] = [];
       const resultFromSignal = getResultFromSignal(
         signal.date,
         signal.symbol,
-        Strategies.Topaz
+        Strategies.Garnet
       );
 
       if (resultFromSignal?.exitDate) {

@@ -1,9 +1,25 @@
 import getHistoricalData from "../historical_data/getHistoricalData";
+import { getReturns } from "./utils";
 
 import type { IStrategy } from "../types/strategy";
 
-const STOPLOSS = 8;
-const TTL = 14;
+const getStopLossFromDays = (days: number): number => {
+  if (days <= 5) {
+    return -10;
+  } else if (days <= 10) {
+    return -5;
+  } else if (days <= 15) {
+    return 0;
+  } else if (days <= 20) {
+    return 5;
+  } else if (days <= 25) {
+    return 10;
+  } else if (days <= 30) {
+    return 15;
+  } else {
+    return days - 5;
+  }
+};
 
 const garnet: IStrategy = (signalDate, signalSymbol) => {
   const historicalData = getHistoricalData(signalSymbol, signalDate, 60);
@@ -16,37 +32,37 @@ const garnet: IStrategy = (signalDate, signalSymbol) => {
 
   const buyPrice = entries[0][1].o;
   let sellPrice: any;
-  const stoplossPrice = ((100 - STOPLOSS) / 100) * buyPrice;
 
-  let ttlCounter = TTL;
-  let daysInPosition;
+  let daysInPosition = 0;
+  let sellDate;
 
   for (let i = 0; i < entries.length; i++) {
     const [date, candle] = entries[i];
     const { o, c } = candle;
+    const stopLoss = getStopLossFromDays(daysInPosition);
+    const stoplossPrice = ((100 + stopLoss) / 100) * buyPrice;
 
     if (c <= stoplossPrice) {
       daysInPosition = i + 1;
       sellPrice = stoplossPrice;
+      sellDate = date.split("-").map((item) => Number(item));
       break;
     }
 
-    if (ttlCounter <= 0) {
-      daysInPosition = i + 1;
-      sellPrice = c;
-      break;
-    }
-
-    const dailyChange = c / o - 1;
-
-    if (dailyChange < -2) {
-      ttlCounter = ttlCounter - Math.abs(Math.round(dailyChange) * 2) - 1;
-    } else {
-      ttlCounter = ttlCounter - 1;
-    }
+    daysInPosition += 1;
   }
 
-  return 0;
+  const change = getReturns(buyPrice, sellPrice);
+
+  console.log(`Traded ${signalSymbol} for ${change} in ${daysInPosition} days`);
+
+  return {
+    entryDate: signalDate,
+    entryPrice: buyPrice,
+    exitDate: sellDate as [number, number, number],
+    exitPrice: sellPrice,
+    symbol: signalSymbol,
+  };
 };
 
 export default garnet;
