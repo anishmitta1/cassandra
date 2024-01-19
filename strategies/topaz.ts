@@ -54,7 +54,9 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
 
   console.log(
     logColor,
-    `Traded ${signalSymbol} for ${change} in ${daysInPosition} days`
+    `Traded ${signalSymbol} for ${change} in ${daysInPosition} days. Bought on ${signalDate.join(
+      "-"
+    )}`
   );
 
   return {

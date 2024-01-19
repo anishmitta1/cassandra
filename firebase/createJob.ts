@@ -23,12 +23,18 @@ const getDateForJob = (job: IJob) => {
 
 const createJob = async (job = sampleJob) => {
   const date = getDateForJob(job);
-  console.log({ date });
-  const { jobs } = (await db.collection("jobs").doc(date).get()).data()!;
-  console.log({ jobs });
-  jobs.push(job);
+  const documentRef = db.collection("jobs").doc(date);
+  const documentExists = (await documentRef.get()).exists;
 
-  await db.collection("jobs").doc(date).update({ jobs });
+  if (!documentExists) {
+    await documentRef.set({ jobs: [job] });
+  } else {
+    const { jobs } = (await db.collection("jobs").doc(date).get()).data()!;
+
+    jobs.push(job);
+
+    await db.collection("jobs").doc(date).set({ jobs }, { merge: true });
+  }
 };
 
 export default createJob;
