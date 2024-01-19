@@ -46,7 +46,16 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
 
   const change = getReturns(buyPrice, sellPrice);
 
-  console.log(`Traded ${signalSymbol} for ${change} in ${daysInPosition} days`);
+  const logColor = change > 0 ? "\x1b[32m" : "\x1b[31m";
+
+  if (!daysInPosition) {
+    throw new Error("Something went wrong");
+  }
+
+  console.log(
+    logColor,
+    `Traded ${signalSymbol} for ${change} in ${daysInPosition} days`
+  );
 
   return {
     entryDate: signalDate,
