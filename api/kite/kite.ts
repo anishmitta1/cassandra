@@ -50,7 +50,7 @@ const placeAmoBuy = async (tradingsymbol: string, quantity: number) => {
     order_type: "MARKET",
     quantity,
     product: "CNC",
-    validity: "IOC",
+    validity: "DAY",
   };
 
   const {
@@ -79,7 +79,7 @@ const placeMarketBuy = async (tradingsymbol: string, quantity: number) => {
     order_type: "MARKET",
     quantity,
     product: "CNC",
-    validity: "IOC",
+    validity: "DAY",
   };
 
   const {

@@ -5,6 +5,7 @@ enum Intent {
 
 interface ISellIntentPayload {
   symbol: string;
+  qty: number;
 }
 
 interface INotifyIntentPayload {

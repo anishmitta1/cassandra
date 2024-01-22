@@ -6,7 +6,7 @@ import createJob from "../firebase/createJob";
 
 import type { IBuySymbolConfig, IBuySymbolConfirmation } from "../types/trade";
 
-const getTtlJob = (symbol: IBuySymbolConfig["symbol"]) => {
+const getTtlJob = (symbol: IBuySymbolConfig["symbol"], qty: number) => {
   const finalDate = getDateAfterCandles();
   const [day, month] = finalDate.split("-").map(Number);
   const jobCronTab = `0 9 ${day} ${month} *`;
@@ -17,6 +17,7 @@ const getTtlJob = (symbol: IBuySymbolConfig["symbol"]) => {
     jobId: randomUUID(),
     payload: {
       symbol,
+      qty,
     },
   };
 
@@ -49,7 +50,7 @@ const buySymbol = async (
 
     const placeOrder = amo ? kiteApi.placeAmoBuy : kiteApi.placeMarketBuy;
 
-    const job = getTtlJob(config.symbol);
+    const job = getTtlJob(config.symbol, qty);
 
     const stoplossPrice = (1 - stoploss / 100) * lastPrice;
 
