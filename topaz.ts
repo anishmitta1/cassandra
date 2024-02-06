@@ -1,15 +1,14 @@
 import { readFileSync } from "fs";
-import getResultFromSignal from "./controllers/getResultFromSignal";
-import { Strategies } from "./types/strategy";
 import { getReturns } from "./strategies/utils";
 import { IBacktestTradeResult } from "./types/trade";
+import topaz from "./strategies/topaz";
 
 import "dotenv/config";
 import "./firebase/initialise";
 
 import type { ITransactionSignal } from "./types/signal";
 
-const csvPath = "./MACD_Breakout.csv";
+const csvPath = "./Topaz.csv";
 
 const extractSignals = (convertedCsvContent: string) => {
   const csvRows = convertedCsvContent
@@ -83,11 +82,7 @@ const results: IBacktestTradeResult[] = [];
     const signal = signals[i];
 
     try {
-      const resultFromSignal = getResultFromSignal(
-        signal.date,
-        signal.symbol,
-        Strategies.Topaz
-      );
+      const resultFromSignal = topaz(signal.date, signal.symbol);
 
       if (resultFromSignal?.exitDate) {
         results.push(resultFromSignal);
