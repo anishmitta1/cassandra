@@ -52,7 +52,7 @@ const checkIsMarketOpen = (): boolean => {
   const hours = currentIstTime.getUTCHours();
   const minutes = currentIstTime.getUTCMinutes();
 
-  if (hours * 60 + minutes < 9 * 60 + 30) {
+  if (hours * 60 + minutes < 9 * 60 + 15) {
     console.log("Marked not yet open");
     return false;
   }
