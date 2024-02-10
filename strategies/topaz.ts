@@ -7,7 +7,7 @@ const STOPLOSS = 10;
 const TTL = 30;
 
 const topaz: IStrategy = (signalDate, signalSymbol) => {
-  const historicalData = getHistoricalData(signalSymbol, signalDate, 60);
+  const historicalData = getHistoricalData(signalSymbol, signalDate, TTL * 2);
 
   if (!historicalData) {
     return null;
@@ -26,13 +26,6 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
   for (let i = 0; i < entries.length; i++) {
     const [date, candle] = entries[i];
     const { c } = candle;
-
-    if (c <= stoplossPrice) {
-      daysInPosition = i + 1;
-      sellPrice = stoplossPrice;
-      sellDate = date.split("-").map((item) => Number(item));
-      break;
-    }
 
     if (ttlCounter <= 0) {
       daysInPosition = i + 1;

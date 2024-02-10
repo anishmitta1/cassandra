@@ -9,7 +9,7 @@ import type { IBuySymbolConfig, IBuySymbolConfirmation } from "../types/trade";
 const getTtlJob = (symbol: IBuySymbolConfig["symbol"], qty: number) => {
   const finalDate = getDateAfterCandles();
   const [day, month] = finalDate.split("-").map(Number);
-  const jobCronTab = `0 9 ${day} ${month} *`;
+  const jobCronTab = `45 8 ${day} ${month} *`;
   const ttlJob: IJob = {
     cronTab: jobCronTab,
     intent: Intent.Sell,
