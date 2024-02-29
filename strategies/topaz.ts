@@ -3,7 +3,7 @@ import { getReturns } from "./utils";
 
 import type { IStrategy } from "../types/strategy";
 
-const STOPLOSS = 10;
+const STOPLOSS = 15;
 const TTL = 30;
 
 const topaz: IStrategy = (signalDate, signalSymbol) => {
@@ -30,6 +30,13 @@ const topaz: IStrategy = (signalDate, signalSymbol) => {
     if (ttlCounter <= 0) {
       daysInPosition = i + 1;
       sellPrice = c;
+      sellDate = date.split("-").map((item) => Number(item));
+      break;
+    }
+
+    if (c <= stoplossPrice) {
+      daysInPosition = i + 1;
+      sellPrice = stoplossPrice;
       sellDate = date.split("-").map((item) => Number(item));
       break;
     }

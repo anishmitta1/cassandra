@@ -8,7 +8,7 @@ import "./firebase/initialise";
 
 import type { ITransactionSignal } from "./types/signal";
 
-const csvPath = "./Topaz_9mos.csv";
+const csvPath = "./Topaz_2y.csv";
 
 const extractSignals = (convertedCsvContent: string) => {
   const csvRows = convertedCsvContent
